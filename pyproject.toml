@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tasks-mcp"
+version = "0.1.0"
+description = "MCP server that logs tasks to Google Sheets and returns a dispatch confirmation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]>=1.2.0",
+    "google-api-python-client>=2.160.0",
+    "google-auth>=2.35.0",
+]
+
+[project.scripts]
+tasks-mcp = "tasks_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tasks_mcp"]
