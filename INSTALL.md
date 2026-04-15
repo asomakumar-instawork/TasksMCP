@@ -54,33 +54,20 @@ You can use **`X-Tasks-Ingest-Key`** instead of **`Authorization`**.
 
 ### Claude Desktop
 
-`claude_desktop_config.json` only supports **`command`**-based servers. Use **`npx`** + **`mcp-remote`** and **`--transport http-only`**. Put the token in **`env`** so the **`Authorization:`** line is not split inside **`args`**. [MCP quickstart](https://modelcontextprotocol.io/quickstart/user).
-
-**Do not** use **`npx @instawork/tasksmcp`** (or **`command`**: **`@instawork/tasksmcp`**): that package is **not** on the public npm registry. **`404 Not Found … @instawork/tasksmcp`** means the config should use **`mcp-remote`** and the hosted URL below, like the JSON snippet.
+Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edit config). Replace **`YOUR_TOKEN_HERE`** with your token. [MCP quickstart](https://modelcontextprotocol.io/quickstart/user).
 
 ```json
 {
   "mcpServers": {
     "tasks-mcp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
-        "--transport",
-        "http-only",
-        "--header",
-        "Authorization:${TASKS_MCP_AUTH_HEADER}"
-      ],
-      "env": {
-        "TASKS_MCP_AUTH_HEADER": "Bearer YOUR_TOKEN_HERE"
-      }
+      "args": ["instawork-mcp", "YOUR_TOKEN_HERE"]
     }
   }
 }
 ```
 
-Use the absolute path to **`npx`** in **`command`** if Claude cannot find it when launched from the Dock.
+Use the absolute path to **`npx`** in **`command`** if Claude cannot find it when launched from the Dock (`which npx` in Terminal).
 
 Restart Claude Desktop after edits.
 
@@ -120,4 +107,4 @@ Some setups run a **Python process** on the laptop that POSTs JSON to **`https:/
 | 401 on MCP | Use the token from **get-started** (or **`TASKS_MCP_INGEST_SECRET`** if your deploy uses it); **`status`** on **`Tokens`** must be **`active`**; header **`Authorization: Bearer …`** or **`X-Tasks-Ingest-Key`**. |
 | Client does not support `url` + Streamable HTTP | Use the stdio + **`/v1/tasks`** flow in the README, or upgrade the client. |
 | Tasks not appearing | Sheet must be shared with the service account; check Cloud Run logs. |
-| **`npm ERR! 404 … @instawork/tasksmcp`** | Use **`mcp-remote`** in **`args`**, not **`@instawork/tasksmcp`**. Align **get-started** / internal docs with **`config-examples/claude-desktop.tasks-mcp.json`**. |
+| **`npm ERR! 404`** on Claude Desktop | Ensure **`args`** is **`["instawork-mcp", "YOUR_TOKEN_HERE"]`** exactly as shown above. |
