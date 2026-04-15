@@ -63,7 +63,7 @@ The **`backend/`** app is an ASGI service (**Streamable HTTP MCP** at **`/mcp`**
 - **`GOOGLE_SERVICE_ACCOUNT_JSON`** — full JSON string (recommended on **Cloud Run** with Secret Manager; see `backend/DEPLOY_CLOUD_RUN.md`).
 - **`GOOGLE_APPLICATION_CREDENTIALS`** — path to JSON file (Docker / VMs with a mounted file).
 - **`TASKS_MCP_SPREADSHEET_ID`**, **`TASKS_MCP_SHEET_TAB`** — optional overrides.
-- **`TASKS_MCP_INGEST_SECRET`** — optional; if set and **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`** is not true, **`/mcp`** requires **`Authorization: Bearer …`** or **`X-Tasks-Ingest-Key`** matching this value. With **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`**, **`/mcp`** accepts connections without that header; **`dispatch_task`** then allows the same secret **or** an **active** token on the **`Tokens`** sheet tab (see `backend/DEPLOY_CLOUD_RUN.md`). **`POST /v1/tasks`** still uses **`X-Tasks-Ingest-Key`** when the secret is set.
+- **`TASKS_MCP_INGEST_SECRET`** — optional; if set and **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`** is not true, **`/mcp`** requires **`Authorization: Bearer …`** or **`X-Tasks-Ingest-Key`** matching this value. With **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`**, **`/mcp`** accepts connections without that header; the **`instawork`** tool then allows the same secret **or** an **active** token on the **`Tokens`** sheet tab (see `backend/DEPLOY_CLOUD_RUN.md`). **`POST /v1/tasks`** still uses **`X-Tasks-Ingest-Key`** when the secret is set.
 
 **Google Cloud Run:** step-by-step guide: [`backend/DEPLOY_CLOUD_RUN.md`](backend/DEPLOY_CLOUD_RUN.md).
 
@@ -81,7 +81,7 @@ docker run -p 8080:8080 \
 
 Health check: **`GET /health`**.
 
-## Tool: `dispatch_task`
+## Tool: `instawork` (title: Instawork)
 
 - **`task_text`** (required)
 - **`source`** (optional)

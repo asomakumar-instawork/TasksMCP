@@ -1,45 +1,55 @@
-# TasksMCP — quick start
+# TasksMCP — use Instawork Tasks from Claude or Cursor
 
-Use this when you want **Claude or Cursor** to log an errand or request into Instawork’s shared task sheet.
-
-Your server must have **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`** enabled (see deploy docs). Otherwise you must add a Bearer token before the MCP will connect.
+After you finish the three steps below, describe your errand in normal language (place, time, what to pick up), or say something like **“Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm.”** The assistant calls the **`instawork`** tool for you. Successful runs append a row to the team Google Sheet.
 
 ---
 
-## 1. Add the MCP (URL only)
+## Step 1 — Sign up
 
-Use this **exact** MCP address:
+Open:
+
+**https://instawork-mcp.replit.app/get-started**
+
+Follow the instructions there (for example Google sign-in) until you reach the screen that shows **your token**.
+
+---
+
+## Step 2 — Copy your token
+
+Copy the token from the site and store it somewhere safe (for example a password manager). Treat it like a password.
+
+---
+
+## Step 3 — Add the token to your MCP config and restart
+
+**MCP URL (same for everyone):**
 
 `https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp`
 
-**Cursor:** edit **`.cursor/mcp.json`** (project or user). Add:
+### Cursor
+
+Edit **`.cursor/mcp.json`** (project folder or `~/.cursor/mcp.json` for all projects). Put this under **`mcpServers`** (merge with any servers you already have). Replace **`YOUR_TOKEN_HERE`** with the token from step 2 — keep the word **`Bearer`** and the space before the token.
 
 ```json
-"tasks-mcp": {
-  "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp"
+{
+  "mcpServers": {
+    "tasks-mcp": {
+      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_TOKEN_HERE"
+      }
+    }
+  }
 }
 ```
 
-**Claude Desktop** does **not** accept a bare `"url"` entry (you’ll see “not valid MCP server configuration”). Use the **`mcp-remote`** bridge (**Node.js 18+** required).
+**Restart Cursor** completely.
 
-**After you redeploy** the latest backend (see below), you can start with **no** token:
+### Claude Desktop
 
-```json
-"tasks-mcp": {
-  "command": "npx",
-  "args": [
-    "-y",
-    "mcp-remote",
-    "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
-    "--transport",
-    "http-only"
-  ]
-}
-```
+Claude needs a small local helper (**`mcp-remote`**) because it does not support a raw **`url`** entry. You need **Node.js 18+** (so **`npx`** works).
 
-**Important:** `mcp-remote` runs a **GET** on your MCP URL during discovery. The hosted server answers that probe with **200** (so OAuth does not fall through to **`POST /register`**, which used to 404). **Redeploy** the latest **`backend/`** image for that behavior.
-
-If Claude still fails (for example Cloud Run **requires** a Bearer at the gateway), add **`--header`** + **`env`** with a token your server accepts:
+Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edit config). Add this block **inside** **`"mcpServers"`** next to your other servers. Replace **`YOUR_TOKEN_HERE`** in **`TASKS_MCP_AUTH_HEADER`** only — the value must be **`Bearer `** then your token (one space after `Bearer`).
 
 ```json
 "tasks-mcp": {
@@ -54,63 +64,39 @@ If Claude still fails (for example Cloud Run **requires** a Bearer at the gatewa
     "Authorization:${TASKS_MCP_AUTH_HEADER}"
   ],
   "env": {
-    "TASKS_MCP_AUTH_HEADER": "Bearer PASTE_YOUR_TOKEN_HERE"
+    "TASKS_MCP_AUTH_HEADER": "Bearer YOUR_TOKEN_HERE"
   }
 }
 ```
 
-**Restart** Cursor or Claude Desktop.
+If **`npx`** is not found when Claude starts, set **`"command"`** to the full path from running **`which npx`** in Terminal (for example **`/opt/homebrew/bin/npx`**).
+
+**Restart Claude Desktop** completely.
 
 ---
 
-## 2. Try an errand (before sign-up)
+## Run an errand
 
-Ask for a task to be logged, for example:
+Examples you can paste into chat:
 
-- “Use **dispatch_task** to log: pick up my prescription at CVS on Main St today before 6pm.”
+- “Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm.”
+- “Log this errand: pharmacy pickup on Main St.”
 
-The assistant should run **`dispatch_task`**. The first reply will explain that you need to **sign in** and then **add your token**—follow that text.
+If the model does not pick up the tool, you can nudge it once: “Call the **instawork** tool for that.”
 
----
-
-## 3. Sign up and get a token
-
-1. Open your team’s **Tasks sign-up** page (the link may appear in the MCP message, or ask your admin).
-2. **Sign in with Google**.
-3. When you see **your access token**, **Copy** it and store it safely (password manager). You may not see it again.
+You should get a confirmation that includes a **client_reference_id** and a new row on the sheet.
 
 ---
 
-## 4. Add or update your token and restart
+## If something fails
 
-**Cursor:** if you started with **`url`** only, edit **`tasks-mcp`** and add **`headers`**:
+| Symptom | What to check |
+|---------|----------------|
+| **401** or MCP never connects | Token typo, token not **active** on the **Tokens** tab in the sheet, or Cloud Run env not set up for per-user tokens — ask your admin. |
+| Claude: **invalid MCP server configuration** | **`tasks-mcp`** must live **inside** **`"mcpServers"`**, not next to it. |
+| Claude: **could not attach** / **disconnected** | Full path to **`npx`**, Node 18+, restart Claude; see [INSTALL.md](INSTALL.md). |
+| Tool runs but sheet does not update | Service account can edit the sheet; check Cloud Run logs. |
 
-```json
-"tasks-mcp": {
-  "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
-  "headers": {
-    "Authorization": "Bearer PASTE_YOUR_TOKEN_HERE"
-  }
-}
-```
+Do **not** paste your token in Slack, email, or a public repo.
 
-**Claude Desktop:** you already use **`env.TASKS_MCP_AUTH_HEADER`** in step 1. After sign-up, set that value to **`Bearer `** plus your personal token (or rotate it there). Save, **restart** Claude, then try **`dispatch_task`** again.
-
-Replace **`PASTE_YOUR_TOKEN_HERE`** with your real token (keep the **`Bearer `** prefix in **`TASKS_MCP_AUTH_HEADER`** for Claude).
-
-**Restart** after edits. You should get a confirmation with a **reference id** and a new row on the team sheet.
-
----
-
-## Problems?
-
-| What you see | What to try |
-|----------------|-------------|
-| **401** on connect | The server may still require a shared ingest secret at the gateway. Use the token your operator gave you as Bearer, or ask them to turn on **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`**. |
-| Claude says **`tasks-mcp`** config is invalid | You used **`url`** only. Switch to **`npx` + `mcp-remote`** as in step 1 (Claude Desktop). |
-| Terminal: **`Not Found` is not valid JSON`** / OAuth 404 | Redeploy latest **TasksMCP** `backend` (GET `/mcp` discovery probe). If it persists, add **`--header`** + **`Bearer`** (see Claude block in step 1). |
-| Sign-in / token message from **`dispatch_task`** | Finish sign-up, add auth (**`headers`** in Cursor; **`env`** + **`--header`** in Claude), restart, retry. |
-| Token message after you added a token | Token wrong, inactive in the **Tokens** sheet, or cache delay—wait ~30s, confirm status is **active**, fix typos, restart. |
-| More detail | [INSTALL.md](INSTALL.md) |
-
-Do **not** post your token in Slack, email, or a public repo.
+Ready-made copies of the JSON also live in **`config-examples/`** in this repo.

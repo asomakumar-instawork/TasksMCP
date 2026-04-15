@@ -22,9 +22,10 @@ DEFAULT_SOURCE = "mcp"
 mcp = FastMCP(
     "TasksMCP",
     instructions=(
-        "Use dispatch_task when the user wants an errand or delivery logged. "
-        "After a successful call, tell the user their task is recorded and being dispatched, "
-        "using the tool's returned confirmation text."
+        "When the user wants something logged for ops—errands, pickups, deliveries, reminders with a place or time, "
+        "or any request to add a row to the shared task sheet—call the instawork tool without asking them to name it. "
+        "Phrases like 'Use Instawork to …' mean this tool. Put their full wording in task_text. "
+        "After a successful call, confirm using the tool's returned text."
     ),
 )
 
@@ -127,14 +128,15 @@ def _submit_via_ingest(
     return " ".join(parts)
 
 
-@mcp.tool()
-def dispatch_task(
+@mcp.tool(name="instawork", title="Instawork")
+def instawork(
     task_text: str,
     source: str | None = None,
     client_reference_id: str | None = None,
 ) -> str:
-    """Record a task as one row in Google Sheets and confirm dispatch.
+    """Log the user's errand or request to the shared task sheet.
 
+    Call when the user describes something to be done, or says things like 'Use Instawork to …'.
     Put the full user request in task_text. Optional source labels where the task came from
     (e.g. cursor, claude); if omitted, TASKS_MCP_SOURCE env or \"mcp\" is used.
     Optional client_reference_id for deduplication; if omitted, a new id is generated.

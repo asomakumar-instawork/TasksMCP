@@ -158,7 +158,7 @@ def _onboarding_message() -> str:
             "",
             "After you receive your token, add it to your MCP client as "
             "Authorization: Bearer <your-token> (or header X-Tasks-Ingest-Key with the same value). "
-            "Then restart Cursor or Claude Desktop and run dispatch_task again.",
+            "Then restart Cursor or Claude Desktop and use the instawork tool again.",
         ]
     )
     return "\n".join(lines)
@@ -252,8 +252,10 @@ class TaskIn(BaseModel):
 mcp = FastMCP(
     "TasksMCP",
     instructions=(
-        "Use dispatch_task when the user wants an errand or delivery logged to the shared task sheet. "
-        "Put the full user request in task_text. After success, confirm using the tool response text. "
+        "When the user wants something logged for ops—errands, pickups, deliveries, reminders with a place or time, "
+        "or any request to add a row to the Instawork / shared task sheet—call the instawork tool without asking them "
+        "to name it. Phrases like 'Use Instawork to …' mean this tool. Put their full wording in task_text. "
+        "After success, confirm using the tool response text. "
         "If the tool returns text about signing in or adding a token, give the user that message clearly "
         "and tell them to complete sign-in, add Authorization Bearer to MCP settings, restart the app, and retry."
     ),
@@ -264,16 +266,17 @@ mcp = FastMCP(
 )
 
 
-@mcp.tool()
-def dispatch_task(
+@mcp.tool(name="instawork", title="Instawork")
+def instawork(
     task_text: str,
     source: str | None = None,
     client_reference_id: str | None = None,
 ) -> str:
-    """Record a task to the shared Google Sheet and confirm dispatch.
+    """Log the user's errand or request to the shared Google Sheet (ops task list).
 
-    Put the full user request in task_text. Optional source (e.g. claude-desktop, cursor)
-    and client_reference_id for deduplication.
+    Call when the user describes something to be done (pickup, delivery, deadline, location), or when they say
+    things like 'Use Instawork to pick up my dry cleaning by Friday.' Put their full request in task_text.
+    Optional source (e.g. claude-desktop, cursor) and client_reference_id for deduplication.
     """
     bearer = _mcp_bearer_token.get(None)
     if not _bearer_may_dispatch(bearer):

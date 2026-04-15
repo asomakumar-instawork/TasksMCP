@@ -109,10 +109,10 @@ rm /tmp/tasksmcp-ingest-secret.txt
 
 ## 6b. (Optional) MCP without a token first — sign-up inside the tool
 
-To let users add **`url` only** (no Bearer), connect once, run **`dispatch_task`**, read the onboarding text, then sign in and add their personal token:
+To let users add **`url` only** (no Bearer), connect once, run the **`instawork`** tool, read the onboarding text, then sign in and add their personal token:
 
 1. Set **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`** on the service (still keep **`TASKS_MCP_INGEST_SECRET`** if you want a shared admin key that always works as Bearer).
-2. Set **`TASKS_MCP_SIGNUP_URL`** to your Google sign-in page (shown in the onboarding message).
+2. Set **`TASKS_MCP_SIGNUP_URL`** to your sign-up page (for example **`https://instawork-mcp.replit.app/get-started`**) if you still use onboarding text inside the **`instawork`** tool.
 3. Keep a **`Tokens`** tab on the same spreadsheet (or set **`TASKS_MCP_TOKENS_TAB`**) with **`token`** and **`status`** columns; **`active`** means the row’s token may dispatch tasks.
 
 Optional: **`TASKS_MCP_TOKENS_CACHE_SECONDS`** (default `30`) — how long the server caches the Tokens tab before re-reading it.

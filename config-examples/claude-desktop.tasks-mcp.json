@@ -1,0 +1,17 @@
+{
+  "tasks-mcp": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "mcp-remote",
+      "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "--transport",
+      "http-only",
+      "--header",
+      "Authorization:${TASKS_MCP_AUTH_HEADER}"
+    ],
+    "env": {
+      "TASKS_MCP_AUTH_HEADER": "Bearer YOUR_TOKEN_HERE"
+    }
+  }
+}
