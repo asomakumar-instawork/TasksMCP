@@ -20,7 +20,20 @@ Use this **exact** MCP address:
 }
 ```
 
-**Claude Desktop:** same `url` under `mcpServers` → `tasks-mcp` (no `headers` yet).
+**Claude Desktop** does **not** accept a bare `"url"` entry (you’ll see “not valid MCP server configuration”). Use the **`mcp-remote`** bridge (**Node.js 18+** required). In **`claude_desktop_config.json`**, under **`mcpServers`**, add **`tasks-mcp`** like this (no token yet):
+
+```json
+"tasks-mcp": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "mcp-remote",
+    "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+    "--transport",
+    "http-only"
+  ]
+}
+```
 
 **Restart** Cursor or Claude Desktop.
 
@@ -46,7 +59,7 @@ The assistant should run **`dispatch_task`**. The first reply will explain that 
 
 ## 4. Add your token and restart
 
-Edit the same MCP entry and add **`headers`**:
+**Cursor:** edit **`tasks-mcp`** and add **`headers`**:
 
 ```json
 "tasks-mcp": {
@@ -57,7 +70,27 @@ Edit the same MCP entry and add **`headers`**:
 }
 ```
 
-Replace `PASTE_YOUR_TOKEN_HERE` with your token (no extra spaces, no quotes around the token).
+**Claude Desktop:** keep **`command` / `args`** / **`mcp-remote`**, and add **`env`** plus a **`--header`** line (no space after **`Authorization:`** in **`args`** — Claude Desktop can mangle that; the real value lives in **`env`**):
+
+```json
+"tasks-mcp": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "mcp-remote",
+    "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+    "--transport",
+    "http-only",
+    "--header",
+    "Authorization:${TASKS_MCP_AUTH_HEADER}"
+  ],
+  "env": {
+    "TASKS_MCP_AUTH_HEADER": "Bearer PASTE_YOUR_TOKEN_HERE"
+  }
+}
+```
+
+Replace **`PASTE_YOUR_TOKEN_HERE`** with your token (inside **`TASKS_MCP_AUTH_HEADER`** only; keep the **`Bearer `** prefix there).
 
 **Restart** Cursor or Claude Desktop, then ask **`dispatch_task`** again. You should get a confirmation with a **reference id** and a new row on the team sheet.
 
@@ -68,7 +101,8 @@ Replace `PASTE_YOUR_TOKEN_HERE` with your token (no extra spaces, no quotes arou
 | What you see | What to try |
 |----------------|-------------|
 | **401** on connect | The server may still require a shared ingest secret at the gateway. Use the token your operator gave you as Bearer, or ask them to turn on **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`**. |
-| Sign-in / token message from **`dispatch_task`** | Finish sign-up, add **`Authorization: Bearer …`**, restart, retry. |
+| Claude says **`tasks-mcp`** config is invalid | You used **`url`** only. Switch to **`npx` + `mcp-remote`** as in step 1 (Claude Desktop). |
+| Sign-in / token message from **`dispatch_task`** | Finish sign-up, add auth (**`headers`** in Cursor; **`env`** + **`--header`** in Claude), restart, retry. |
 | Token message after you added a token | Token wrong, inactive in the **Tokens** sheet, or cache delay—wait ~30s, confirm status is **active**, fix typos, restart. |
 | More detail | [INSTALL.md](INSTALL.md) |
 

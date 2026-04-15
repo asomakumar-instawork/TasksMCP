@@ -12,7 +12,7 @@ Log tasks to **one shared Google Sheet** from Claude, Cursor, or any MCP client 
 
 **Optional: URL only first, token second**
 
-If Cloud Run has **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`** and per-user tokens live on a **`Tokens`** sheet tab, installers can add **`url`** with no **`headers`**, run **`dispatch_task`** once, read the onboarding text, then sign in and add **`Authorization: Bearer …`**. See **[USER_GUIDE.md](USER_GUIDE.md)**.
+If Cloud Run has **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`** and per-user tokens live on a **`Tokens`** sheet tab, installers can connect without a Bearer first, run **`dispatch_task`** once, read the onboarding text, then sign in and add auth. **Cursor:** **`url`** only, then **`headers`**. **Claude Desktop:** **`mcp-remote`** with no **`--header`** first, then add **`--header`** + **`env`** as in the Claude section below. See **[USER_GUIDE.md](USER_GUIDE.md)**.
 
 **Auth**
 
@@ -55,22 +55,37 @@ You can use **`X-Tasks-Ingest-Key`** instead of **`Authorization`** if your clie
 
 ### Claude Desktop
 
-`claude_desktop_config.json` ([paths](https://docs.claude.com/en/docs/claude-desktop/mcp)):
+`claude_desktop_config.json` only loads servers that start with **`command`** (stdio). For a hosted **Streamable HTTP** MCP, use **`npx`** + **`mcp-remote`** ([npm](https://www.npmjs.com/package/mcp-remote)) and **`--transport http-only`**. Paths: [MCP quickstart](https://modelcontextprotocol.io/quickstart/user).
+
+**With Bearer token** (put the token in **`env`** so spaces in `Authorization: Bearer …` are not broken inside **`args`**):
 
 ```json
 {
   "mcpServers": {
     "tasks-mcp": {
-      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
-      "headers": {
-        "Authorization": "Bearer ${TASKS_MCP_INGEST_BEARER}"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+        "--transport",
+        "http-only",
+        "--header",
+        "Authorization:${TASKS_MCP_AUTH_HEADER}"
+      ],
+      "env": {
+        "TASKS_MCP_AUTH_HEADER": "Bearer ${TASKS_MCP_INGEST_BEARER}"
       }
     }
   }
 }
 ```
 
-Restart Claude Desktop. If **`${TASKS_MCP_INGEST_BEARER}`** is not expanded, paste the raw token after **`Bearer `** in that file (keep the file private).
+Export **`TASKS_MCP_INGEST_BEARER`** before launching Claude Desktop, or replace **`${TASKS_MCP_INGEST_BEARER}`** with the raw token inside **`TASKS_MCP_AUTH_HEADER`** (keep the file private).
+
+**Without a token first** (only if the server allows anonymous **`/mcp`**): omit **`--header`**, **`Authorization`**, and **`env`**, leaving only **`command`**, **`args`** with **`-y`**, **`mcp-remote`**, URL, and **`--transport` `http-only`**.
+
+Restart Claude Desktop after edits.
 
 ### Claude Code
 
