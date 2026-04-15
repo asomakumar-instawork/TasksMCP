@@ -89,7 +89,7 @@ Health check: **`GET /health`**.
 
 ## Install (Claude, Cursor, …)
 
-Short copy-paste setup: **[INSTALL.md](INSTALL.md)** — **`url`** + **`Authorization`** (same idea as [Doorstep](https://trydoorstep.app/docs)). Optional local **stdio** client still supported for **`/v1/tasks`**.
+Short copy-paste setup: **[INSTALL.md](INSTALL.md)** — **`url`** + **`Authorization`** (same idea as [Doorstep](https://trydoorstep.app/docs)). Claude Desktop uses **`npx mcp-remote`** + the hosted URL; **`@instawork/tasksmcp`** is not an npm package (do not use it in **`command`** / **`args`**). Optional local **stdio** client still supported for **`/v1/tasks`**.
 
 Redirects: [INSTALL_CLAUDE.md](INSTALL_CLAUDE.md) · [INSTALL_CURSOR.md](INSTALL_CURSOR.md)
 

@@ -49,6 +49,8 @@ Edit **`.cursor/mcp.json`** (project folder or `~/.cursor/mcp.json` for all proj
 
 Claude needs a small local helper (**`mcp-remote`**) because it does not support a raw **`url`** entry. You need **Node.js 18+** (so **`npx`** works).
 
+The **`args`** below must use the public package **`mcp-remote`** (then your MCP URL). There is **no** npm package **`@instawork/tasksmcp`**; if **`npm ERR! 404 … @instawork/tasksmcp`** appears, your config was wrong—replace it with this block exactly (do not run **`npx @instawork/tasksmcp`**).
+
 Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edit config). Add this block **inside** **`"mcpServers"`** next to your other servers. Replace **`YOUR_TOKEN_HERE`** in **`TASKS_MCP_AUTH_HEADER`** only — the value must be **`Bearer `** then your token (one space after `Bearer`).
 
 ```json
@@ -95,6 +97,7 @@ You should get a confirmation that includes a **client_reference_id** and a new 
 | **401** or MCP never connects | Token typo, token not **active** on the **Tokens** tab in the sheet, or Cloud Run env not set up for per-user tokens — ask your admin. |
 | Claude: **invalid MCP server configuration** | **`tasks-mcp`** must live **inside** **`"mcpServers"`**, not next to it. |
 | Claude: **could not attach** / **disconnected** | Full path to **`npx`**, Node 18+, restart Claude; see [INSTALL.md](INSTALL.md). |
+| **`npm ERR! 404 … @instawork/tasksmcp`** | **`@instawork/tasksmcp` is not published.** Use **`mcp-remote`** in **`args`** as in the JSON above, not a scoped Instawork npm package. Update **get-started** copy if it still mentions **`@instawork/tasksmcp`**. |
 | Tool runs but sheet does not update | Service account can edit the sheet; check Cloud Run logs. |
 
 Do **not** paste your token in Slack, email, or a public repo.
