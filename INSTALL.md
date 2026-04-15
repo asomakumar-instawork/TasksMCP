@@ -22,9 +22,11 @@ Log tasks to **one shared Google Sheet** from Claude, Cursor, or any MCP client 
 Let the agent handle the setup for you. Run this once in your terminal to install the skill:
 
 ```bash
-mkdir -p ~/.cursor/skills/install-tasksmcp && \
+mkdir -p ~/.cursor/skills/install-tasksmcp ~/.cursor/skills/use-instawork && \
   curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/install-tasksmcp/SKILL.md \
-  -o ~/.cursor/skills/install-tasksmcp/SKILL.md
+  -o ~/.cursor/skills/install-tasksmcp/SKILL.md && \
+  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/use-instawork/SKILL.md \
+  -o ~/.cursor/skills/use-instawork/SKILL.md
 ```
 
 Then in any Cursor chat, type: **"Install TasksMCP"** — the agent will ask for your token and write the config automatically.
