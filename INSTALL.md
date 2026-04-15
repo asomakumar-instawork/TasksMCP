@@ -17,9 +17,21 @@ Log tasks to **one shared Google Sheet** from Claude, Cursor, or any MCP client 
 - **Personal token** from your app (row on the **`Tokens`** sheet with **`status`** = **`active`**): use **`Authorization: Bearer …`** or **`X-Tasks-Ingest-Key`**.
 - **Optional** shared **`TASKS_MCP_INGEST_SECRET`** on Cloud Run: also accepted. For sheet-only tokens, set **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET=true`** so **`/mcp`** accepts connections without the shared secret; the **`instawork`** tool still checks the **Tokens** tab. See **`backend/DEPLOY_CLOUD_RUN.md`**.
 
-### Cursor
+### Cursor (automated via Cursor skill)
 
-`.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global). **Restart Cursor.**
+Let the agent handle the setup for you. Run this once in your terminal to install the skill:
+
+```bash
+mkdir -p ~/.cursor/skills/install-tasksmcp && \
+  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/install-tasksmcp/SKILL.md \
+  -o ~/.cursor/skills/install-tasksmcp/SKILL.md
+```
+
+Then in any Cursor chat, type: **"Install TasksMCP"** — the agent will ask for your token and write the config automatically.
+
+### Cursor (manual)
+
+`~/.cursor/mcp.json` (global). **Restart Cursor.**
 
 ```json
 {
