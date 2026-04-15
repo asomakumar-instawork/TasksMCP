@@ -51,6 +51,23 @@ def _parse_headers(scope: dict) -> dict[str, str]:
     return {k.decode().lower(): v.decode() for k, v in raw}
 
 
+def _http_method(scope: dict) -> str:
+    m = scope.get("method") or b"GET"
+    return m.decode().upper() if isinstance(m, bytes) else str(m).upper()
+
+
+def _mcp_get_is_stream_resume(headers: dict[str, str]) -> bool:
+    return bool(headers.get("mcp-session-id", "").strip() or headers.get("last-event-id", "").strip())
+
+
+def _mcp_get_is_discovery_probe(headers: dict[str, str]) -> bool:
+    if _mcp_get_is_stream_resume(headers):
+        return False
+    if headers.get("mcp-protocol-version", "").strip():
+        return False
+    return True
+
+
 def _parse_active_tokens_from_rows(rows: list[list[str]]) -> frozenset[str]:
     if not rows:
         return frozenset()
@@ -326,6 +343,13 @@ class _McpPathAuth:
 
         if path.startswith("/mcp"):
             headers = _parse_headers(scope)
+            method = _http_method(scope)
+            if method in ("GET", "HEAD") and _mcp_get_is_discovery_probe(headers):
+                if method == "HEAD":
+                    await Response(status_code=200)(scope, receive, send)
+                else:
+                    await JSONResponse({})(scope, receive, send)
+                return
             bearer = _effective_bearer_from_headers(headers)
             cv = _mcp_bearer_token.set(bearer)
             try:

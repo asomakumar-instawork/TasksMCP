@@ -22,7 +22,24 @@ Use this **exact** MCP address:
 
 **Claude Desktop** does **not** accept a bare `"url"` entry (you’ll see “not valid MCP server configuration”). Use the **`mcp-remote`** bridge (**Node.js 18+** required).
 
-**Important:** `mcp-remote` tries **OAuth discovery** on the server. TasksMCP does **not** implement those OAuth URLs, so **`mcp-remote` with no `--header` often fails** in the terminal with **`HTTP 404`** / **`Not Found` is not valid JSON`**. For Claude Desktop, use a **Bearer token your server already accepts** (shared ingest secret or a **Tokens**-sheet token) from the start:
+**After you redeploy** the latest backend (see below), you can start with **no** token:
+
+```json
+"tasks-mcp": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "mcp-remote",
+    "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+    "--transport",
+    "http-only"
+  ]
+}
+```
+
+**Important:** `mcp-remote` runs a **GET** on your MCP URL during discovery. The hosted server answers that probe with **200** (so OAuth does not fall through to **`POST /register`**, which used to 404). **Redeploy** the latest **`backend/`** image for that behavior.
+
+If Claude still fails (for example Cloud Run **requires** a Bearer at the gateway), add **`--header`** + **`env`** with a token your server accepts:
 
 ```json
 "tasks-mcp": {
@@ -91,7 +108,7 @@ Replace **`PASTE_YOUR_TOKEN_HERE`** with your real token (keep the **`Bearer `**
 |----------------|-------------|
 | **401** on connect | The server may still require a shared ingest secret at the gateway. Use the token your operator gave you as Bearer, or ask them to turn on **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`**. |
 | Claude says **`tasks-mcp`** config is invalid | You used **`url`** only. Switch to **`npx` + `mcp-remote`** as in step 1 (Claude Desktop). |
-| Terminal: **`Not Found` is not valid JSON`** / OAuth 404 | `mcp-remote` is probing OAuth; TasksMCP has no OAuth metadata. Add **`--header`** + **`Bearer`** token (see Claude block in step 1). |
+| Terminal: **`Not Found` is not valid JSON`** / OAuth 404 | Redeploy latest **TasksMCP** `backend` (GET `/mcp` discovery probe). If it persists, add **`--header`** + **`Bearer`** (see Claude block in step 1). |
 | Sign-in / token message from **`dispatch_task`** | Finish sign-up, add auth (**`headers`** in Cursor; **`env`** + **`--header`** in Claude), restart, retry. |
 | Token message after you added a token | Token wrong, inactive in the **Tokens** sheet, or cache delay—wait ~30s, confirm status is **active**, fix typos, restart. |
 | More detail | [INSTALL.md](INSTALL.md) |

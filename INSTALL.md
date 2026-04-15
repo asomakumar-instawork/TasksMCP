@@ -57,7 +57,7 @@ You can use **`X-Tasks-Ingest-Key`** instead of **`Authorization`** if your clie
 
 `claude_desktop_config.json` only loads servers that start with **`command`** (stdio). For a hosted **Streamable HTTP** MCP, use **`npx`** + **`mcp-remote`** ([npm](https://www.npmjs.com/package/mcp-remote)) and **`--transport http-only`**. Paths: [MCP quickstart](https://modelcontextprotocol.io/quickstart/user).
 
-**OAuth vs TasksMCP:** `mcp-remote` runs **OAuth discovery** against the remote host. TasksMCP does **not** expose OAuth metadata, so a config **without** **`--header`** often fails with **`HTTP 404`** / invalid JSON. Pass **`Authorization`** with a **Bearer** value the server accepts (ingest secret or **Tokens**-sheet token) using **`--header`** + **`env`** as below.
+**OAuth vs `mcp-remote`:** The bridge **GET**s the MCP URL first. TasksMCP returns **200** for that discovery-style GET (no **`mcp-protocol-version`** / session headers) so **`mcp-remote` does not** fall through to **`POST /register`** on your origin (which used to 404). **Redeploy** the current **`backend/`** image. If the gateway still requires a Bearer for **POST** `/mcp`, keep **`--header`** + **`env`** as below.
 
 **With Bearer token** (put the token in **`env`** so spaces in `Authorization: Bearer …` are not broken inside **`args`**):
 
