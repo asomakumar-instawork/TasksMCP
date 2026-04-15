@@ -20,7 +20,9 @@ Use this **exact** MCP address:
 }
 ```
 
-**Claude Desktop** does **not** accept a bare `"url"` entry (you’ll see “not valid MCP server configuration”). Use the **`mcp-remote`** bridge (**Node.js 18+** required). In **`claude_desktop_config.json`**, under **`mcpServers`**, add **`tasks-mcp`** like this (no token yet):
+**Claude Desktop** does **not** accept a bare `"url"` entry (you’ll see “not valid MCP server configuration”). Use the **`mcp-remote`** bridge (**Node.js 18+** required).
+
+**Important:** `mcp-remote` tries **OAuth discovery** on the server. TasksMCP does **not** implement those OAuth URLs, so **`mcp-remote` with no `--header` often fails** in the terminal with **`HTTP 404`** / **`Not Found` is not valid JSON`**. For Claude Desktop, use a **Bearer token your server already accepts** (shared ingest secret or a **Tokens**-sheet token) from the start:
 
 ```json
 "tasks-mcp": {
@@ -30,8 +32,13 @@ Use this **exact** MCP address:
     "mcp-remote",
     "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
     "--transport",
-    "http-only"
-  ]
+    "http-only",
+    "--header",
+    "Authorization:${TASKS_MCP_AUTH_HEADER}"
+  ],
+  "env": {
+    "TASKS_MCP_AUTH_HEADER": "Bearer PASTE_YOUR_TOKEN_HERE"
+  }
 }
 ```
 
@@ -57,9 +64,9 @@ The assistant should run **`dispatch_task`**. The first reply will explain that 
 
 ---
 
-## 4. Add your token and restart
+## 4. Add or update your token and restart
 
-**Cursor:** edit **`tasks-mcp`** and add **`headers`**:
+**Cursor:** if you started with **`url`** only, edit **`tasks-mcp`** and add **`headers`**:
 
 ```json
 "tasks-mcp": {
@@ -70,29 +77,11 @@ The assistant should run **`dispatch_task`**. The first reply will explain that 
 }
 ```
 
-**Claude Desktop:** keep **`command` / `args`** / **`mcp-remote`**, and add **`env`** plus a **`--header`** line (no space after **`Authorization:`** in **`args`** — Claude Desktop can mangle that; the real value lives in **`env`**):
+**Claude Desktop:** you already use **`env.TASKS_MCP_AUTH_HEADER`** in step 1. After sign-up, set that value to **`Bearer `** plus your personal token (or rotate it there). Save, **restart** Claude, then try **`dispatch_task`** again.
 
-```json
-"tasks-mcp": {
-  "command": "npx",
-  "args": [
-    "-y",
-    "mcp-remote",
-    "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
-    "--transport",
-    "http-only",
-    "--header",
-    "Authorization:${TASKS_MCP_AUTH_HEADER}"
-  ],
-  "env": {
-    "TASKS_MCP_AUTH_HEADER": "Bearer PASTE_YOUR_TOKEN_HERE"
-  }
-}
-```
+Replace **`PASTE_YOUR_TOKEN_HERE`** with your real token (keep the **`Bearer `** prefix in **`TASKS_MCP_AUTH_HEADER`** for Claude).
 
-Replace **`PASTE_YOUR_TOKEN_HERE`** with your token (inside **`TASKS_MCP_AUTH_HEADER`** only; keep the **`Bearer `** prefix there).
-
-**Restart** Cursor or Claude Desktop, then ask **`dispatch_task`** again. You should get a confirmation with a **reference id** and a new row on the team sheet.
+**Restart** after edits. You should get a confirmation with a **reference id** and a new row on the team sheet.
 
 ---
 
@@ -102,6 +91,7 @@ Replace **`PASTE_YOUR_TOKEN_HERE`** with your token (inside **`TASKS_MCP_AUTH_HE
 |----------------|-------------|
 | **401** on connect | The server may still require a shared ingest secret at the gateway. Use the token your operator gave you as Bearer, or ask them to turn on **`TASKS_MCP_ALLOW_MCP_WITHOUT_INGEST_SECRET`**. |
 | Claude says **`tasks-mcp`** config is invalid | You used **`url`** only. Switch to **`npx` + `mcp-remote`** as in step 1 (Claude Desktop). |
+| Terminal: **`Not Found` is not valid JSON`** / OAuth 404 | `mcp-remote` is probing OAuth; TasksMCP has no OAuth metadata. Add **`--header`** + **`Bearer`** token (see Claude block in step 1). |
 | Sign-in / token message from **`dispatch_task`** | Finish sign-up, add auth (**`headers`** in Cursor; **`env`** + **`--header`** in Claude), restart, retry. |
 | Token message after you added a token | Token wrong, inactive in the **Tokens** sheet, or cache delay—wait ~30s, confirm status is **active**, fix typos, restart. |
 | More detail | [INSTALL.md](INSTALL.md) |
