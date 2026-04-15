@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import os
 import sys
+import urllib.error
+import urllib.request
 import uuid
 from datetime import datetime, timezone
 
@@ -26,11 +29,12 @@ mcp = FastMCP(
 )
 
 
-def _get_config() -> tuple[str, str, str]:
+def _get_sheets_config() -> tuple[str, str, str]:
     creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "").strip()
     if not creds_path:
         raise RuntimeError(
-            "GOOGLE_APPLICATION_CREDENTIALS is not set. Point it at your service account JSON key file."
+            "GOOGLE_APPLICATION_CREDENTIALS is not set. Point it at your service account JSON key file, "
+            "or set TASKS_MCP_INGEST_URL to use a hosted ingest API instead."
         )
     spreadsheet_id = os.environ.get("TASKS_MCP_SPREADSHEET_ID", DEFAULT_SPREADSHEET_ID).strip()
     sheet_tab = os.environ.get("TASKS_MCP_SHEET_TAB", DEFAULT_SHEET_TAB).strip()
@@ -38,7 +42,7 @@ def _get_config() -> tuple[str, str, str]:
 
 
 def _sheets_service():
-    creds_path, _, _ = _get_config()
+    creds_path, _, _ = _get_sheets_config()
     credentials = service_account.Credentials.from_service_account_file(
         creds_path,
         scopes=SCOPES,
@@ -46,8 +50,8 @@ def _sheets_service():
     return build("sheets", "v4", credentials=credentials, cache_discovery=False)
 
 
-def _append_row(values: list[str]) -> None:
-    _, spreadsheet_id, sheet_tab = _get_config()
+def _append_row_local(values: list[str]) -> None:
+    _, spreadsheet_id, sheet_tab = _get_sheets_config()
     escaped = sheet_tab.replace("'", "''")
     range_a1 = f"'{escaped}'!A:D"
     body = {"values": [values]}
@@ -61,6 +65,68 @@ def _append_row(values: list[str]) -> None:
     ).execute()
 
 
+def _submit_via_ingest(
+    *,
+    task_text: str,
+    source: str,
+    client_reference_id: str,
+) -> str:
+    url = os.environ.get("TASKS_MCP_INGEST_URL", "").strip()
+    if not url:
+        raise RuntimeError("TASKS_MCP_INGEST_URL is not set.")
+
+    token = os.environ.get("TASKS_MCP_INGEST_TOKEN", "").strip()
+    payload = {
+        "task_text": task_text,
+        "source": source,
+        "client_reference_id": client_reference_id,
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={"Content-Type": "application/json"},
+    )
+    if token:
+        req.add_header("X-Tasks-Ingest-Key", token)
+
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            raw = resp.read().decode()
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")
+        print(f"Ingest HTTP {e.code}: {detail}", file=sys.stderr)
+        if e.code == 401:
+            return "Task not recorded: ingest rejected the request (check TASKS_MCP_INGEST_TOKEN)."
+        return f"Task not recorded: ingest returned HTTP {e.code}."
+    except urllib.error.URLError as e:
+        print(f"Ingest URL error: {e}", file=sys.stderr)
+        return f"Task not recorded: could not reach ingest URL ({e})."
+
+    try:
+        body = json.loads(raw)
+    except json.JSONDecodeError:
+        return "Task not recorded: ingest response was not valid JSON."
+
+    if not body.get("ok"):
+        msg = body.get("error") or body.get("message") or "unknown error"
+        return f"Task not recorded: {msg}"
+
+    ref = body.get("client_reference_id", client_reference_id)
+    created = body.get("created_at_utc", "")
+    tab = body.get("sheet_tab", "")
+    parts = [
+        f"Task recorded and dispatched. client_reference_id: {ref}.",
+    ]
+    if created:
+        parts.append(f"Logged at {created} UTC")
+    if tab:
+        parts.append(f"to sheet tab '{tab}'")
+    parts.append("(via hosted ingest).")
+    return " ".join(parts)
+
+
 @mcp.tool()
 def dispatch_task(
     task_text: str,
@@ -72,6 +138,10 @@ def dispatch_task(
     Put the full user request in task_text. Optional source labels where the task came from
     (e.g. cursor, claude); if omitted, TASKS_MCP_SOURCE env or \"mcp\" is used.
     Optional client_reference_id for deduplication; if omitted, a new id is generated.
+
+    If TASKS_MCP_INGEST_URL is set, the task is POSTed to that REST URL (typically **…/v1/tasks**).
+    For Doorstep-style clients, point the MCP client at **…/mcp** with a Bearer token instead — no local Python.
+    If INGEST_URL is unset, the server appends using GOOGLE_APPLICATION_CREDENTIALS (private mode).
     """
     task_text = (task_text or "").strip()
     if not task_text:
@@ -83,9 +153,17 @@ def dispatch_task(
 
     row = [created, task_text, resolved_source, ref]
 
+    ingest_url = os.environ.get("TASKS_MCP_INGEST_URL", "").strip()
+    if ingest_url:
+        return _submit_via_ingest(
+            task_text=task_text,
+            source=resolved_source,
+            client_reference_id=ref,
+        )
+
     try:
-        _append_row(row)
-        _, _, sheet_tab = _get_config()
+        _append_row_local(row)
+        _, _, sheet_tab = _get_sheets_config()
     except RuntimeError as e:
         return f"Task not recorded: {e}"
     except HttpError as e:

@@ -1,0 +1,6 @@
+uvicorn[standard]>=0.32.0
+mcp[cli]>=1.2.0
+google-api-python-client>=2.160.0
+google-auth>=2.35.0
+pydantic>=2.0.0
+starlette>=0.46.0
