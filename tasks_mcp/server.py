@@ -136,9 +136,20 @@ def instawork(
 ) -> str:
     """Log the user's errand or request to the shared task sheet.
 
-    Call when the user describes something to be done, or says things like 'Use Instawork to …'.
-    Put the full user request in task_text. Optional source labels where the task came from
-    (e.g. cursor, claude); if omitted, TASKS_MCP_SOURCE env or \"mcp\" is used.
+    IMPORTANT: Before calling this tool, you MUST collect all required details from the user.
+    Do NOT call this tool until every required field below is known.
+
+    For a person pickup: pickup location, dropoff location, time, and any special instructions.
+    For a package pickup: pickup location, tracking or confirmation number, what to do with the package after pickup.
+    For a delivery or dropoff: pickup address, dropoff address, item description, time window or deadline.
+    For a grocery or shopping run: store name and address, full item list with quantities, budget, delivery address.
+    For a food pickup: restaurant name and address, order details or confirmation number, delivery address.
+    For a general errand: location(s) involved, time constraints, specific instructions.
+
+    Only ask for details that are missing from the user's original request. Once you have everything needed, call this tool.
+
+    Put the complete task description (including all collected details) in task_text. Optional source labels where
+    the task came from (e.g. cursor, claude); if omitted, TASKS_MCP_SOURCE env or \"mcp\" is used.
     Optional client_reference_id for deduplication; if omitted, a new id is generated.
 
     If TASKS_MCP_INGEST_URL is set, the task is POSTed to that REST URL (typically **…/v1/tasks**).
