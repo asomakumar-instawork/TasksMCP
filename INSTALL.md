@@ -32,15 +32,7 @@ mkdir -p ~/.cursor/skills/install-tasksmcp ~/.cursor/skills/use-instawork && \
 No `curl`? Use Python 3 (pre-installed on macOS):
 
 ```bash
-python3 - <<'EOF'
-import urllib.request, os
-base = "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills"
-for skill in ["install-tasksmcp", "use-instawork"]:
-    path = os.path.expanduser(f"~/.cursor/skills/{skill}")
-    os.makedirs(path, exist_ok=True)
-    urllib.request.urlretrieve(f"{base}/{skill}/SKILL.md", f"{path}/SKILL.md")
-    print(f"Installed {skill}")
-EOF
+python3 <(curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/install-cursor-skills.py)
 ```
 
 Then in any Cursor chat, type: **"Install TasksMCP"** — the agent will ask for your token and write the config automatically.
