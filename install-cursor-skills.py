@@ -1,11 +1,13 @@
 import urllib.request
 import os
 
-base = "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills"
-skills = ["install-tasksmcp", "use-instawork"]
+skills = {
+    "install-tasksmcp": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/install-tasksmcp/SKILL.md",
+    "use-instawork": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/use-instawork/SKILL.md",
+}
 
-for skill in skills:
+for skill, url in skills.items():
     path = os.path.expanduser(os.path.join("~", ".cursor", "skills", skill))
     os.makedirs(path, exist_ok=True)
-    urllib.request.urlretrieve(base + "/" + skill + "/SKILL.md", os.path.join(path, "SKILL.md"))
+    urllib.request.urlretrieve(url, os.path.join(path, "SKILL.md"))
     print("Installed " + skill)
