@@ -1,6 +1,6 @@
-# TasksMCP — use Instawork Tasks from Claude or Cursor
+# Errands — use Instawork from Claude or Cursor
 
-After you finish the three steps below, describe your errand in normal language (place, time, what to pick up), or say something like **“Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm.”** The assistant calls the **`instawork`** tool for you. Successful runs append a row to the team Google Sheet.
+After you finish the three steps below, describe your errand in normal language (place, time, what to pick up), or say something like **"Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm."** The assistant calls the **`instawork`** tool for you. Successful runs append a row to the team Google Sheet.
 
 ---
 
@@ -28,12 +28,12 @@ Copy the token from the site and store it somewhere safe (for example a password
 
 ### Cursor
 
-Edit **`.cursor/mcp.json`** (project folder or `~/.cursor/mcp.json` for all projects). Put this under **`mcpServers`** (merge with any servers you already have). Replace **`YOUR_TOKEN_HERE`** with the token from step 2 — keep the word **`Bearer`** and the space before the token.
+Edit **`~/.cursor/mcp.json`** (global, applies to all projects). Put this under **`mcpServers`** (merge with any servers you already have). Replace **`YOUR_TOKEN_HERE`** with the token from step 2 — keep the word **`Bearer`** and the space before the token.
 
 ```json
 {
   "mcpServers": {
-    "tasks-mcp": {
+    "errands": {
       "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
@@ -52,7 +52,7 @@ Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edi
 ```json
 {
   "mcpServers": {
-    "tasks-mcp": {
+    "errands": {
       "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
@@ -70,10 +70,10 @@ Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edi
 
 Examples you can paste into chat:
 
-- “Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm.”
-- “Log this errand: pharmacy pickup on Main St.”
+- "Use Instawork to pick up my dry cleaning at Main Street Cleaners by Friday 5pm."
+- "Log this errand: pharmacy pickup on Main St."
 
-If the model does not pick up the tool, you can nudge it once: “Call the **instawork** tool for that.”
+If the model does not pick up the tool, you can nudge it once: "Call the **instawork** tool for that."
 
 You should get a confirmation that includes a **client_reference_id** and a new row on the sheet.
 
@@ -84,7 +84,7 @@ You should get a confirmation that includes a **client_reference_id** and a new 
 | Symptom | What to check |
 |---------|----------------|
 | **401** or MCP never connects | Token typo, token not **active** on the **Tokens** tab in the sheet, or Cloud Run env not set up for per-user tokens — ask your admin. |
-| Claude: **invalid MCP server configuration** | **`tasks-mcp`** must live **inside** **`"mcpServers"`**, not next to it. |
+| Claude: **invalid MCP server configuration** | **`errands`** must live **inside** **`"mcpServers"`**, not next to it. |
 | Claude: **could not attach** / **disconnected** | Restart Claude Desktop completely after saving the config. |
 | Tool runs but sheet does not update | Service account can edit the sheet; check Cloud Run logs. |
 

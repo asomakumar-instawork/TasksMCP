@@ -2,8 +2,8 @@ import urllib.request
 import os
 
 skills = {
-    "install-tasksmcp": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/install-tasksmcp/SKILL.md",
-    "use-instawork": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/use-instawork/SKILL.md",
+    "install-errands": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/install-errands/SKILL.md",
+    "use-instawork": "https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/use-instawork/SKILL.md",
 }
 
 for skill, url in skills.items():

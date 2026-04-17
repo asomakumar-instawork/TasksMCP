@@ -1,5 +1,5 @@
 {
-  "tasks-mcp": {
+  "errands": {
     "command": "npx",
     "args": [
       "-y",
@@ -8,10 +8,10 @@
       "--transport",
       "http-only",
       "--header",
-      "Authorization:${TASKS_MCP_AUTH_HEADER}"
+      "Authorization:${ERRANDS_AUTH_HEADER}"
     ],
     "env": {
-      "TASKS_MCP_AUTH_HEADER": "Bearer YOUR_TOKEN_HERE"
+      "ERRANDS_AUTH_HEADER": "Bearer YOUR_TOKEN_HERE"
     }
   }
 }

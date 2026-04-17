@@ -20,7 +20,7 @@ DEFAULT_SHEET_TAB = "MCP outputs"
 DEFAULT_SOURCE = "mcp"
 
 mcp = FastMCP(
-    "TasksMCP",
+    "Errands",
     instructions=(
         "When the user wants something logged for ops—errands, pickups, deliveries, reminders with a place or time, "
         "or any request to add a row to the shared task sheet—call the instawork tool without asking them to name it. "

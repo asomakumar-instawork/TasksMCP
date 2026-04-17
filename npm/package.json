@@ -1,7 +1,7 @@
 {
   "name": "instawork-mcp",
   "version": "1.0.1",
-  "description": "Log tasks to a shared Google Sheet from Claude or any MCP client",
+  "description": "Log errands to a shared Google Sheet from Claude or any MCP client",
   "main": "index.js",
   "bin": {
     "instawork-mcp": "index.js"

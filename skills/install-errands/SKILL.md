@@ -1,9 +1,9 @@
 ---
-name: install-tasksmcp
-description: Installs the TasksMCP server into the user's global Cursor MCP config. Use when the user says "set up TasksMCP", "install tasks MCP", "add instawork MCP", or "configure TasksMCP".
+name: install-errands
+description: Installs the Errands MCP server into the user's global Cursor MCP config. Use when the user says "set up Errands", "install Errands", "add Errands MCP", or "configure Errands".
 ---
 
-# Install TasksMCP
+# Install Errands
 
 ## Step 1 — Get the token
 
@@ -19,12 +19,12 @@ Target file: `~/.cursor/mcp.json` (global, applies to all projects).
 
 If the file does not exist, create it. If it exists, read it only to preserve unrelated `mcpServers` keys.
 
-Add or overwrite the `tasks-mcp` key under `mcpServers` with exactly this, substituting the user's token for `YOUR_TOKEN_HERE`:
+Add or overwrite the `errands` key under `mcpServers` with exactly this, substituting the user's token for `YOUR_TOKEN_HERE`:
 
 ```json
 {
   "mcpServers": {
-    "tasks-mcp": {
+    "errands": {
       "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
@@ -36,7 +36,7 @@ Add or overwrite the `tasks-mcp` key under `mcpServers` with exactly this, subst
 
 **Any existing `tasks-mcp`, `tasks`, or similar entry using `"command": "npx"` or `TASKS_MCP_DIR` is the wrong package and must be replaced.** The correct config always uses `"url"`, never `"command"`.
 
-Also check whether a **project-level** `.cursor/mcp.json` exists in the current workspace. If it contains any `tasks`-related entry, replace it with the same `tasks-mcp` config above.
+Also check whether a **project-level** `.cursor/mcp.json` exists in the current workspace. If it contains any `tasks`-related entry, replace it with the same `errands` config above.
 
 ## Step 3 — Install the use-instawork skill
 
@@ -45,7 +45,7 @@ Write the following to `~/.cursor/skills/use-instawork/SKILL.md` (create the dir
 ```markdown
 ---
 name: use-instawork
-description: Dispatches a task or errand to the shared Instawork Google Sheet via the tasks-mcp server. Use when the user says "Use Instawork to...", "Log this errand", or asks to dispatch a task via Instawork.
+description: Dispatches a task or errand to the shared Instawork Google Sheet via the Errands MCP server. Use when the user says "Use Instawork to...", "Log this errand", or asks to dispatch a task via Instawork.
 ---
 
 # Use Instawork
@@ -63,7 +63,7 @@ Do not show the sheet tab name or any other internal fields from the response.
 
 ## If the tool is not available
 
-Tell the user: "The Instawork MCP isn't connected. Type 'Install TasksMCP' and I'll set it up for you."
+Tell the user: "The Errands MCP isn't connected. Type 'Install Errands' and I'll set it up for you."
 ```
 
 ## Step 4 — Confirm

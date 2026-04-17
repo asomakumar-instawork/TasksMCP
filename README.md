@@ -1,6 +1,6 @@
-# TasksMCP
+# Errands
 
-Model Context Protocol (MCP) server that records tasks in **one shared Google Sheet**.
+Model Context Protocol (MCP) server that records errands in **one shared Google Sheet**.
 
 Two ways to run it:
 
@@ -51,7 +51,7 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 set -a && source .env && set +a
-tasks-mcp
+errands-mcp
 ```
 
 ## Deploy the ingest API (owner)
@@ -71,12 +71,12 @@ The **`backend/`** app is an ASGI service (**Streamable HTTP MCP** at **`/mcp`**
 
 ```bash
 cd backend
-docker build -t tasksmcp-ingest .
+docker build -t errands-ingest .
 docker run -p 8080:8080 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json \
   -v /path/on/host/sa.json:/secrets/sa.json:ro \
   -e TASKS_MCP_INGEST_SECRET=your-long-random-secret \
-  tasksmcp-ingest
+  errands-ingest
 ```
 
 Health check: **`GET /health`**.
@@ -89,9 +89,7 @@ Health check: **`GET /health`**.
 
 ## Install (Claude, Cursor, …)
 
-Short copy-paste setup: **[INSTALL.md](INSTALL.md)** — **`url`** + **`Authorization`** (same idea as [Doorstep](https://trydoorstep.app/docs)). Claude Desktop uses **`npx mcp-remote`** + the hosted URL; **`@instawork/tasksmcp`** is not an npm package (do not use it in **`command`** / **`args`**). Optional local **stdio** client still supported for **`/v1/tasks`**.
-
-Redirects: [INSTALL_CLAUDE.md](INSTALL_CLAUDE.md) · [INSTALL_CURSOR.md](INSTALL_CURSOR.md)
+Short copy-paste setup: **[INSTALL.md](INSTALL.md)** — **`url`** + **`Authorization`** (same idea as [Doorstep](https://trydoorstep.app/docs)). Claude Desktop uses **`npx mcp-remote`** + the hosted URL. Optional local **stdio** client still supported for **`/v1/tasks`**.
 
 ## References
 

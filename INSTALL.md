@@ -1,6 +1,6 @@
-# Install TasksMCP
+# Install Errands
 
-Log tasks to **one shared Google Sheet** from Claude, Cursor, or any MCP client that supports **Streamable HTTP** (same shape as [Doorstep](https://trydoorstep.app/docs)).
+Log errands to **one shared Google Sheet** from Claude, Cursor, or any MCP client that supports **Streamable HTTP** (same shape as [Doorstep](https://trydoorstep.app/docs)).
 
 ---
 
@@ -25,16 +25,16 @@ Run one command in your terminal:
 npx skills add asomakumar-instawork/TasksMCP -g -a cursor
 ```
 
-Then in any Cursor chat, type: **"Install TasksMCP"** — the agent will ask for your token and write the config automatically.
+Then in any Cursor chat, type: **"Install Errands"** — the agent will ask for your token and write the config automatically.
 
 <details>
 <summary>No npx / prefer curl</summary>
 
 ```bash
-mkdir -p ~/.cursor/skills/install-tasksmcp ~/.cursor/skills/use-instawork && \
-  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/install-tasksmcp/SKILL.md \
-  -o ~/.cursor/skills/install-tasksmcp/SKILL.md && \
-  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/.cursor/skills/use-instawork/SKILL.md \
+mkdir -p ~/.cursor/skills/install-errands ~/.cursor/skills/use-instawork && \
+  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/install-errands/SKILL.md \
+  -o ~/.cursor/skills/install-errands/SKILL.md && \
+  curl -fsSL https://raw.githubusercontent.com/asomakumar-instawork/TasksMCP/main/skills/use-instawork/SKILL.md \
   -o ~/.cursor/skills/use-instawork/SKILL.md
 ```
 
@@ -47,7 +47,7 @@ mkdir -p ~/.cursor/skills/install-tasksmcp ~/.cursor/skills/use-instawork && \
 ```json
 {
   "mcpServers": {
-    "tasks-mcp": {
+    "errands": {
       "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
@@ -57,7 +57,7 @@ mkdir -p ~/.cursor/skills/install-tasksmcp ~/.cursor/skills/use-instawork && \
 }
 ```
 
-Optional: **`Bearer ${TASKS_MCP_TOKEN}`** and export **`TASKS_MCP_TOKEN`** so the secret is not in the file.
+Optional: **`Bearer ${ERRANDS_TOKEN}`** and export **`ERRANDS_TOKEN`** so the secret is not in the file.
 
 You can use **`X-Tasks-Ingest-Key`** instead of **`Authorization`**.
 
@@ -68,32 +68,32 @@ Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edi
 ```json
 {
   "mcpServers": {
-    "tasks-mcp": {
-      "command": "npx",
-      "args": ["instawork-mcp", "YOUR_TOKEN_HERE"]
+    "errands": {
+      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_TOKEN_HERE"
+      }
     }
   }
 }
 ```
-
-Use the absolute path to **`npx`** in **`command`** if Claude cannot find it when launched from the Dock (`which npx` in Terminal).
 
 Restart Claude Desktop after edits.
 
 ### Claude Code
 
 ```bash
-export TASKS_MCP_TOKEN="YOUR_TOKEN_HERE"
-claude mcp add --transport http tasks-mcp \
+export ERRANDS_TOKEN="YOUR_TOKEN_HERE"
+claude mcp add --transport http errands \
   https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp \
-  --header "Authorization: Bearer ${TASKS_MCP_TOKEN}"
+  --header "Authorization: Bearer ${ERRANDS_TOKEN}"
 ```
 
 See [Claude Code MCP](https://code.claude.com/docs/en/mcp) if flags differ on your version (`claude mcp --help`).
 
 ### Try it
 
-Ask your agent to use **Instawork** (tool name **`instawork`**) with a **`task_text`** describing the task—for example: “Use Instawork to …”. When auth succeeds, the server appends a row to the Google Sheet.
+Ask your agent to use **Instawork** (tool name **`instawork`**) with a **`task_text`** describing the errand—for example: "Use Instawork to …". When auth succeeds, the server appends a row to the Google Sheet.
 
 ---
 
@@ -116,4 +116,3 @@ Some setups run a **Python process** on the laptop that POSTs JSON to **`https:/
 | 401 on MCP | Use the token from **get-started** (or **`TASKS_MCP_INGEST_SECRET`** if your deploy uses it); **`status`** on **`Tokens`** must be **`active`**; header **`Authorization: Bearer …`** or **`X-Tasks-Ingest-Key`**. |
 | Client does not support `url` + Streamable HTTP | Use the stdio + **`/v1/tasks`** flow in the README, or upgrade the client. |
 | Tasks not appearing | Sheet must be shared with the service account; check Cloud Run logs. |
-| **`npm ERR! 404`** on Claude Desktop | Ensure **`args`** is **`["instawork-mcp", "YOUR_TOKEN_HERE"]`** exactly as shown above. |

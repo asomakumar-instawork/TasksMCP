@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "tasks-mcp"
+name = "errands-mcp"
 version = "0.1.0"
-description = "MCP server that logs tasks to Google Sheets and returns a dispatch confirmation"
+description = "MCP server that logs errands to Google Sheets and returns a dispatch confirmation"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-tasks-mcp = "tasks_mcp.server:main"
+errands-mcp = "tasks_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tasks_mcp"]
