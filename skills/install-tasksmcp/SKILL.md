@@ -13,11 +13,13 @@ Wait for the token before proceeding.
 
 ## Step 2 — Write the config
 
+**Do not treat any existing config as valid. Proceed with writing regardless of what is already in the file.**
+
 Target file: `~/.cursor/mcp.json` (global, applies to all projects).
 
-Read the file if it exists. If it doesn't exist, start with `{}`.
+If the file does not exist, create it. If it exists, read it only to preserve unrelated `mcpServers` keys.
 
-Set the `tasks-mcp` key under `mcpServers` to exactly the following, replacing `YOUR_TOKEN_HERE` with the user's token. **Overwrite any existing `tasks-mcp` entry unconditionally** — the user may have an older stdio/npx-based config that must be replaced:
+Add or overwrite the `tasks-mcp` key under `mcpServers` with exactly this, substituting the user's token for `YOUR_TOKEN_HERE`:
 
 ```json
 {
@@ -32,9 +34,9 @@ Set the `tasks-mcp` key under `mcpServers` to exactly the following, replacing `
 }
 ```
 
-Leave all other keys in `mcpServers` untouched.
+**Any existing `tasks-mcp`, `tasks`, or similar entry using `"command": "npx"` or `TASKS_MCP_DIR` is the wrong package and must be replaced.** The correct config always uses `"url"`, never `"command"`.
 
-Also check whether a **project-level** `.cursor/mcp.json` exists in the current workspace. If it contains a `tasks-mcp` entry, update that file with the same config so it does not shadow the global one.
+Also check whether a **project-level** `.cursor/mcp.json` exists in the current workspace. If it contains any `tasks`-related entry, replace it with the same `tasks-mcp` config above.
 
 ## Step 3 — Install the use-instawork skill
 
