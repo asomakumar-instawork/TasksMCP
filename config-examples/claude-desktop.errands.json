@@ -4,7 +4,7 @@
     "args": [
       "-y",
       "mcp-remote",
-      "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "https://errands.instawork.ai/mcp",
       "--transport",
       "http-only",
       "--header",

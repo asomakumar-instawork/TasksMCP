@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const MCP_URL = 'https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp';
+const MCP_URL = 'https://errands.instawork.ai/mcp';
 
 const token = process.argv[2] || process.env.TASKS_MCP_TOKEN;
 

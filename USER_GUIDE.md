@@ -24,7 +24,7 @@ Copy the token from the site and store it somewhere safe (for example a password
 
 **MCP URL (same for everyone):**
 
-`https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp`
+`https://errands.instawork.ai/mcp`
 
 ### Cursor
 
@@ -34,7 +34,7 @@ Edit **`~/.cursor/mcp.json`** (global, applies to all projects). Put this under 
 {
   "mcpServers": {
     "errands": {
-      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "url": "https://errands.instawork.ai/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
       }
@@ -53,7 +53,7 @@ Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edi
 {
   "mcpServers": {
     "errands": {
-      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "url": "https://errands.instawork.ai/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
       }

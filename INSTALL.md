@@ -10,7 +10,7 @@ Log errands to **one shared Google Sheet** from Claude, Cursor, or any MCP clien
 
 **MCP endpoint**
 
-`https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp`
+`https://errands.instawork.ai/mcp`
 
 **Auth**
 
@@ -48,7 +48,7 @@ mkdir -p ~/.cursor/skills/install-errands ~/.cursor/skills/use-instawork && \
 {
   "mcpServers": {
     "errands": {
-      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "url": "https://errands.instawork.ai/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
       }
@@ -69,7 +69,7 @@ Edit **`claude_desktop_config.json`** (Claude → Settings → Developer → Edi
 {
   "mcpServers": {
     "errands": {
-      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
+      "url": "https://errands.instawork.ai/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
       }
@@ -85,7 +85,7 @@ Restart Claude Desktop after edits.
 ```bash
 export ERRANDS_TOKEN="YOUR_TOKEN_HERE"
 claude mcp add --transport http errands \
-  https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp \
+  https://errands.instawork.ai/mcp \
   --header "Authorization: Bearer ${ERRANDS_TOKEN}"
 ```
 
