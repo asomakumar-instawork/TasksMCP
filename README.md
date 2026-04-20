@@ -6,7 +6,7 @@ Two ways to run it:
 
 | Mode | Who | Credentials |
 |------|-----|-------------|
-| **Hosted MCP** (recommended — [Doorstep](https://trydoorstep.app/docs)-style) | You deploy **`backend/`** on Cloud Run; installers add **`url`** + **`Authorization`** in the client | Service account JSON **only on the server** |
+| **Hosted MCP** | You deploy **`backend/`** on Cloud Run; installers add **`url`** + **`Authorization`** in the client | Service account JSON **only on the server** |
 | **Direct Sheets** | You (or trusted machines) | `GOOGLE_APPLICATION_CREDENTIALS` on that machine |
 
 **Do not** put a service account JSON in a public repo. If everyone should write to **your** sheet, use **hosted ingest** so only your deployment holds the Google key.
