@@ -1,6 +1,6 @@
 # Install Errands
 
-Log errands to **one shared Google Sheet** from Claude, Cursor, or any MCP client that supports **Streamable HTTP** (same shape as [Doorstep](https://trydoorstep.app/docs)).
+Log errands to **one shared Google Sheet** from Claude, Cursor, or any MCP client that supports **Streamable HTTP**.
 
 ---
 
