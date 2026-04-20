@@ -25,7 +25,7 @@ Add or overwrite the `errands` key under `mcpServers` with exactly this, substit
 {
   "mcpServers": {
     "errands": {
-      "url": "https://errands.instawork.ai/mcp",
+      "url": "https://tasksmcp-ingest-402222098945.us-central1.run.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_TOKEN_HERE"
       }
