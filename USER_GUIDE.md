@@ -8,7 +8,7 @@ After you finish the three steps below, describe your errand in normal language 
 
 Open:
 
-**https://instawork-mcp.replit.app/get-started**
+**https://errands.instawork.ai/get-started**
 
 Follow the instructions there (for example Google sign-in) until you reach the screen that shows **your token**.
 
