@@ -7,7 +7,7 @@ description: Installs the Errands MCP server into the user's global Cursor MCP c
 
 ## Step 1 — Get the token
 
-Tell the user: "Visit https://instawork-mcp.replit.app/get-started, sign in, and paste your token here."
+Tell the user: "Visit https://errands.instawork.ai/get-started, sign in, and paste your token here."
 
 Wait for the token before proceeding.
 

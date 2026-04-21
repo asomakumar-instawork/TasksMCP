@@ -6,7 +6,7 @@ Log errands to **one shared Google Sheet** from Claude, Cursor, or any MCP clien
 
 ## Hosted MCP (recommended)
 
-**Sign up → token → config:** **https://instawork-mcp.replit.app/get-started** → copy token → paste into the snippets below (or the files in **`config-examples/`**). Full walkthrough: **[USER_GUIDE.md](USER_GUIDE.md)**.
+**Sign up → token → config:** **https://errands.instawork.ai/get-started** → copy token → paste into the snippets below (or the files in **`config-examples/`**). Full walkthrough: **[USER_GUIDE.md](USER_GUIDE.md)**.
 
 **MCP endpoint**
 
